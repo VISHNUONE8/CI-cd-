@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.andrayudu.cicdin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.andrayudu.cicdin"
