@@ -1,3 +1,5 @@
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,8 +22,20 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") { // Use create for named configurations
+            // These will be provided by GitHub Actions Secrets
+            // Fallback to project properties for local builds if needed
+            storeFile = file(System.getenv("UPLOAD_KEYSTORE_FILE") ?: project.findProperty("UPLOAD_KEYSTORE_FILE") ?: "E:\\CICD keystore")
+            storePassword = System.getenv("UPLOAD_KEYSTORE_PASSWORD") ?: project.findProperty("UPLOAD_KEYSTORE_PASSWORD") as? String
+            keyAlias = System.getenv("UPLOAD_KEY_ALIAS") ?: project.findProperty("UPLOAD_KEY_ALIAS") as? String
+            keyPassword = System.getenv("UPLOAD_KEY_PASSWORD") ?: project.findProperty("UPLOAD_KEY_PASSWORD") as? String
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
