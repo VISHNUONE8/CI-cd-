@@ -38,7 +38,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1.1.3 # Check for the latest version
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON_PLAIN_TEXT }}
-          packageName: Customize Toolbar… # Replace with your app's package name
+          packageName: com.andrayudu.cicdin # Replace with your app's package name
           releaseFiles: app/build/outputs/bundle/release/*.aab # Path to your AAB
           track: internal # Or alpha, beta, production, internalappsharing
           # userFraction: 0.5 # For staged rollouts (e.g., 50%) - optional
