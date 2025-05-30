@@ -57,6 +57,7 @@ jobs:
           packageName: com.andrayudu.cicdin # Replace with your app's package name
           releaseFiles: app/build/outputs/bundle/release/*.aab # Path to your AAB
           track: internal # Or alpha, beta, production, internalappsharing
+          status: draft # <<< --- CHANGE THIS TO 'draft'
           # userFraction: 0.5 # For staged rollouts (e.g., 50%) - optional
           # whatsNewDirectory: whatsnew/ # Path to release notes (optional)
           # mappingFile: app/build/outputs/mapping/release/mapping.txt # Optional mapping file
