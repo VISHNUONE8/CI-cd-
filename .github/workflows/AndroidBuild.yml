@@ -14,6 +14,9 @@ jobs:
   # This workflow contains a single job called "build"
   build-and-release:
     runs-on: ubuntu-latest
+    permissions: # <<< --- ADD THIS
+      contents: write  # Allows the GITHUB_TOKEN to write to the repository (commit and push)
+      # You might also need 'pull-requests: write' if your action interacts with PRs, but 'contents: write' is key here.
     env: # Define environment variables that Gradle will use
       UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
       UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
