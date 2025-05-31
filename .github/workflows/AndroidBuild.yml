@@ -22,6 +22,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Fetches all history so you can push changes back.
+          # If you're using a PAT, you might need to provide it here.
+          # For same-repo pushes by GITHUB_TOKEN, this is usually fine.
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -30,9 +35,45 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.9' # Or your project's Python version
+
+      - name: Increment versionCode
+        id: increment_version # Give an ID to this step to access its outputs
+        run: |
+            # Adjust the path and type (kts/groovy) as needed
+            # Option 1: If you saved the script in your repo
+            python .github/scripts/increment_version.py app/build.gradle.kts kts 
+            # Option 2: Or use app/build.gradle groovy if that's your file
+            
+            # --- If the script is not in the repo, you can create it dynamically (less clean) ---
+            # mkdir -p .github/scripts
+            # cat << 'EOF' > .github/scripts/increment_version.py
+            # # Paste the entire Python script content here
+            # EOF
+            # python .github/scripts/increment_version.py app/build.gradle.kts kts
+          # Ensure this path and type (kts or groovy) are correct for your project
+          # e.g., app/build.gradle groovy
+
           # This step creates the keystore file from the Base64 secret
           # and sets the UPLOAD_KEYSTORE_FILE environment variable for subsequent steps.
           #        run: echo "${{ secrets.UPLOAD_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+          
+
+      - name: Commit and Push versionCode Changes
+        uses: stefanzweifel/git-auto-commit-action@v5 # Check for latest version
+        with:
+          commit_message: "CI: Bump versionCode to ${{ steps.increment_version.outputs.new_version_code }}"
+          # Optional: Define commit author and email if needed, defaults work well.
+          # commit_author: Author <actions@github.com>
+          # commit_user_name: GitHub Actions
+          # commit_user_email: actions@github.com
+          file_pattern: app/build.gradle.kts # IMPORTANT: Only commit the changed Gradle file
+          # Or use app/build.gradle if that's your file. Add other files if your script modifies more.
+          # Optional: specify the branch to push to, defaults to the current branch
+          # push_options: '--force' # Use with caution
 
       - name: Decode Keystore and Set Path
         run: |
@@ -44,8 +85,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Clean Project (Optional but Recommended)
+        run: ./gradlew clean
+
       - name: Build aab
         run: ./gradlew bundleRelease # Or your specific bundle task
+
+      - name: List output files
+        run: |
+            echo "Checking for AAB in app/build/outputs/bundle/release/"
+            ls -la app/build/outputs/bundle/release/
 
 
 
